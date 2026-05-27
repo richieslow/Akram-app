@@ -580,6 +580,8 @@ function CoachApp({user,onLogout}){
   const [goal,setGoal]=useState("");
   const [plan,setPlan]=useState("");
   const [planLoad,setPlanLoad]=useState(false);
+  const [newPR,setNewPR]=useState(false);
+  const [bumped,setBumped]=useState(false);
   const [viewAth,setViewAth]=useState(null);
   const [athTab,setAthTab]=useState("profile");
   const [athletes,setAthletes]=useState([]);
@@ -1166,7 +1168,7 @@ React.createElement("div",{style:{color:C.muted,fontSize:13,padding:"8px 0"}},"N
           ),
           React.createElement("div",{style:{background:C.navBg,borderRadius:14,padding:"18px 20px",display:"flex",justifyContent:"space-between",alignItems:"center"}},
               React.createElement("div",null,
-                React.createElement("div",{style:{fontSize:11,color:"#9898a6",letterSpacing:1}},"FITNESS SCORE"),
+                React.createElement("div",{style:{fontSize:11,color:"#9898a6",letterSpacing:1}},"FITNESS LEVEL"),
                 React.createElement("div",{style:{fontFamily:"Barlow Condensed,sans-serif",fontSize:56,fontWeight:900,color:viewAth.col,lineHeight:1}},viewAth.score+"%"),
                 React.createElement("div",{style:{fontSize:13,color:"#9898a6",marginTop:4}},viewAth.level)
               ),
@@ -2042,7 +2044,7 @@ function AthleteApp({user,onLogout}){
             React.createElement("div",{style:{fontSize:12,color:"#9898a6",fontWeight:600,letterSpacing:1,marginBottom:2}},"Welcome, "+(user.name||"Athlete")+" △"),
             React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
               React.createElement("div",null,
-                React.createElement("div",{style:{fontSize:11,color:"#9898a6",letterSpacing:1}},"FITNESS SCORE"),
+                React.createElement("div",{style:{fontSize:11,color:"#9898a6",letterSpacing:1}},"FITNESS LEVEL"),
                 React.createElement("div",{style:{fontSize:48,fontWeight:900,fontFamily:"Barlow Condensed,sans-serif",lineHeight:1}},calcFitnessScore(rmHist,user.gender,user.dob).overall+"%"),
                 React.createElement("div",{style:{fontSize:13,color:"#9898a6",marginTop:4}},"Level: ",React.createElement("span",{style:{color:C.red,fontWeight:700}},calcFitnessScore(rmHist,user.gender,user.dob).overall>=80?"Elite":calcFitnessScore(rmHist,user.gender,user.dob).overall>=60?"Advanced":calcFitnessScore(rmHist,user.gender,user.dob).overall>=40?"Intermediate":"Beginner"))
               ),
@@ -2402,7 +2404,7 @@ function AthleteApp({user,onLogout}){
           React.createElement("div",{style:{background:C.navBg,borderRadius:14,padding:"18px 20px",display:"flex",alignItems:"center",gap:16}},
             React.createElement(Ring,{value:calcFitnessScore(rmHist,user.gender,user.dob).overall,max:100,color:C.red,label:"Overall",size:84}),
             React.createElement("div",null,
-              React.createElement("div",{style:{color:"#9898a6",fontSize:11,letterSpacing:1,marginBottom:2}},"FITNESS SCORE"),
+              React.createElement("div",{style:{color:"#9898a6",fontSize:11,letterSpacing:1,marginBottom:2}},"FITNESS LEVEL"),
               React.createElement("div",{style:{color:C.white,fontSize:32,fontWeight:900,fontFamily:"Barlow Condensed,sans-serif",lineHeight:1}},calcFitnessScore(rmHist,user.gender,user.dob).overall+"%"),
               React.createElement("div",{style:{color:C.red,fontSize:14,fontWeight:700,marginTop:4}},calcFitnessScore(rmHist,user.gender,user.dob).overall>=80?"Elite":calcFitnessScore(rmHist,user.gender,user.dob).overall>=60?"Advanced":calcFitnessScore(rmHist,user.gender,user.dob).overall>=40?"Intermediate":"Beginner")
             )
