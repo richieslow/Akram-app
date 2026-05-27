@@ -863,7 +863,7 @@ function CoachApp({user,onLogout}){
   };
 
   return React.createElement("div",{className:"app-wrapper",style:{minHeight:"100vh",background:C.bg}},
-    React.createElement(Sidebar,{nav:COACH_NAV,active:tab,onNav:setTab,user,onLogout,roleColor:C.blue,roleLabel:"🎓 Coach"}),
+    
     React.createElement("div",{className:"main-content"},
       React.createElement("div",{style:{background:C.navBg,padding:"0 12px",display:"flex",alignItems:"center",justifyContent:"space-between",height:52,borderBottom:"1px solid #222"}},
         React.createElement("button",{onClick:()=>setCoachSidebarOpen(true),style:{background:"none",border:"none",cursor:"pointer",color:C.white,fontSize:24,lineHeight:1,padding:"4px 8px 4px 0"}},"☰"),
@@ -2008,7 +2008,7 @@ function AthleteApp({user,onLogout}){
   const firstPR=rmHist[selLift]&&rmHist[selLift].length>0?rmHist[selLift][0].v:null;
 
   return React.createElement("div",{className:"app-wrapper",style:{minHeight:"100vh",background:C.bg}},
-    React.createElement(Sidebar,{nav:NAV,active:screen,onNav:setScreen,user,onLogout,roleColor:C.red,roleLabel:"△ Athlete"}),
+    
     React.createElement("div",{className:"main-content"},
       React.createElement("div",{style:{background:C.navBg,padding:"0 12px",display:"flex",alignItems:"center",justifyContent:"space-between",height:52,borderBottom:"1px solid #222"}},
         React.createElement("button",{onClick:()=>setSidebarOpen(true),style:{background:"none",border:"none",cursor:"pointer",color:C.white,fontSize:24,lineHeight:1,padding:"4px 8px 4px 0"}},"☰"),
