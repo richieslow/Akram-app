@@ -511,7 +511,7 @@ function AuthScreen({onAuth}){
         const d=await sbIn(email,pass);
         if(d.error)throw new Error(d.error_description||"Login failed");
         const u={...d.user,token:d.access_token,role:isCoach?"coach":"athlete",name:(d.user&&d.user.user_metadata?d.user.user_metadata.name:null)||email.split("@")[0]};
-        // Load active status from profile
+        // Load profile from Supabase — single fetch with all fields
         try{
           const prof=await fetch(SURL+"/rest/v1/profiles?id=eq."+d.user.id+"&select=active,full_name,dob,gender,nationality,phone,height,weight,days,accepted,health_form,health_lang,Next_payment,payment_history",{
             headers:{apikey:SKEY,"Authorization":"Bearer "+d.access_token}
@@ -2891,7 +2891,7 @@ function AthleteApp({user,onLogout}){
           ),
           (()=>{
             if(user.healthForm){
-              // Read view — identical to coach view, always English
+              // Read view — identical to coach, always English
               const hf=JSON.parse(user.healthForm);
               const yes="Yes";
               const no="No";
