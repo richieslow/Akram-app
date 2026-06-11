@@ -1504,6 +1504,7 @@ function CoachApp({user,onLogout}){
   const [progDays,setProgDays]=useState({});
   const [progHist,setProgHist]=useState({});
   const [weekBriefings,setWeekBriefings]=useState({});
+  const [editingBriefing,setEditingBriefing]=useState(false);
   const [briefingSaved,setBriefingSaved]=useState(false);
   const [progSaved,setProgSaved]=useState(false);
   const [apList,setApList]=useState([]);
@@ -2806,29 +2807,46 @@ function CoachApp({user,onLogout}){
               d.slice(0,3)))
           ),
           React.createElement("div",{style:{background:C.white,border:"1px solid "+C.border,borderRadius:12,padding:"14px 16px"}},
-            React.createElement("div",{style:{fontSize:11,fontWeight:700,color:"#3d3d4a",letterSpacing:1,marginBottom:8}},"WEEK BRIEFING"),
-            React.createElement("textarea",{
-              value:weekBriefings[progWeek]||"",
-              onChange:function(e){setWeekBriefings(function(prev){return{...prev,[progWeek]:e.target.value};});},
-              placeholder:"Write a briefing for this week — goals, focus, notes for athletes...",
-              rows:3,
-              style:{width:"100%",background:C.bg,border:"1px solid "+C.border,borderRadius:8,padding:"10px 12px",fontSize:13,color:C.text,outline:"none",resize:"vertical",fontFamily:"DM Sans,sans-serif",boxSizing:"border-box"}
-            }),
-            React.createElement("div",{style:{display:"flex",justifyContent:"flex-end",marginTop:8}},
-              React.createElement("button",{
-                onClick:async function(){
-                  var text=weekBriefings[progWeek]||"";
-                  try{
-                    await fetch(SURL+"/rest/v1/week_briefings?week=eq."+encodeURIComponent(progWeek),{method:"DELETE",headers:{apikey:SKEY,"Authorization":"Bearer "+(user.token||SKEY)}});
-                    if(text.trim()){
-                      await fetch(SURL+"/rest/v1/week_briefings",{method:"POST",headers:{apikey:SKEY,"Authorization":"Bearer "+(user.token||SKEY),"Content-Type":"application/json","Prefer":"return=minimal"},body:JSON.stringify({coach_id:user.email||user.id,week:progWeek,briefing:text})});
-                    }
-                    setApSaved(true);setTimeout(function(){setApSaved(false);},2000);
-                  }catch(e){}
-                },
-                style:{background:C.red,color:C.white,border:"none",borderRadius:8,padding:"8px 18px",fontWeight:700,fontSize:12,cursor:"pointer",transition:"background .3s"}
-              },"Save Briefing")
-            )
+            React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}},
+              React.createElement("div",{style:{fontSize:11,fontWeight:700,color:"#3d3d4a",letterSpacing:1}},"WEEK BRIEFING"),
+              weekBriefings[progWeek]&&!editingBriefing&&React.createElement("button",{
+                onClick:function(){setEditingBriefing(true);},
+                style:{background:"none",border:"1px solid "+C.border,borderRadius:8,padding:"4px 12px",cursor:"pointer",fontWeight:700,fontSize:11,color:C.text}
+              },"Edit")
+            ),
+            weekBriefings[progWeek]&&!editingBriefing
+              ? React.createElement("div",{style:{fontSize:13,color:"#3d3d4a",lineHeight:1.6,whiteSpace:"pre-wrap",padding:"10px 12px",background:C.bg,borderRadius:8,border:"1px solid "+C.border}},
+                  weekBriefings[progWeek]
+                )
+              : React.createElement("div",null,
+                  React.createElement("textarea",{
+                    value:weekBriefings[progWeek]||"",
+                    onChange:function(e){setWeekBriefings(function(prev){return{...prev,[progWeek]:e.target.value};});},
+                    placeholder:"Write a briefing for this week — goals, focus, notes for athletes...",
+                    rows:3,
+                    style:{width:"100%",background:C.bg,border:"1px solid "+C.border,borderRadius:8,padding:"10px 12px",fontSize:13,color:C.text,outline:"none",resize:"vertical",fontFamily:"DM Sans,sans-serif",boxSizing:"border-box"}
+                  }),
+                  React.createElement("div",{style:{display:"flex",justifyContent:"flex-end",gap:8,marginTop:8}},
+                    editingBriefing&&React.createElement("button",{
+                      onClick:function(){setEditingBriefing(false);},
+                      style:{background:"none",border:"1px solid "+C.border,borderRadius:8,padding:"8px 14px",cursor:"pointer",fontWeight:700,fontSize:12,color:C.muted}
+                    },"Cancel"),
+                    React.createElement("button",{
+                      onClick:async function(){
+                        var text=weekBriefings[progWeek]||"";
+                        try{
+                          await fetch(SURL+"/rest/v1/week_briefings?week=eq."+encodeURIComponent(progWeek),{method:"DELETE",headers:{apikey:SKEY,"Authorization":"Bearer "+(user.token||SKEY)}});
+                          if(text.trim()){
+                            await fetch(SURL+"/rest/v1/week_briefings",{method:"POST",headers:{apikey:SKEY,"Authorization":"Bearer "+(user.token||SKEY),"Content-Type":"application/json","Prefer":"return=minimal"},body:JSON.stringify({coach_id:user.email||user.id,week:progWeek,briefing:text})});
+                          }
+                          setEditingBriefing(false);
+                          setApSaved(true);setTimeout(function(){setApSaved(false);},2000);
+                        }catch(e){}
+                      },
+                      style:{background:C.red,color:C.white,border:"none",borderRadius:8,padding:"8px 18px",fontWeight:700,fontSize:12,cursor:"pointer"}
+                    },"Save Briefing")
+                  )
+                )
           ),
           ...getBlocks(progDay).map((block,idx)=>
             React.createElement("div",{key:block.id,style:{background:C.white,border:"1px solid "+C.border,borderRadius:12,overflow:"hidden"}},
@@ -3077,30 +3095,47 @@ function CoachApp({user,onLogout}){
             )
           ),
           apSel&&React.createElement("div",{style:{background:C.white,border:"1px solid "+C.border,borderRadius:12,padding:"14px 16px"}},
-            React.createElement("div",{style:{fontSize:11,fontWeight:700,color:"#3d3d4a",letterSpacing:1,marginBottom:8}},"WEEK BRIEFING"),
-            React.createElement("textarea",{
-              value:weekBriefings[apSel+"_"+apWeek]||"",
-              onChange:function(e){setWeekBriefings(function(prev){return{...prev,[apSel+"_"+apWeek]:e.target.value};});},
-              placeholder:"Write a briefing for this week — goals, focus, notes for athletes...",
-              rows:3,
-              style:{width:"100%",background:C.bg,border:"1px solid "+C.border,borderRadius:8,padding:"10px 12px",fontSize:13,color:C.text,outline:"none",resize:"vertical",fontFamily:"DM Sans,sans-serif",boxSizing:"border-box"}
-            }),
-            React.createElement("div",{style:{display:"flex",justifyContent:"flex-end",marginTop:8}},
-              React.createElement("button",{
-                onClick:async function(){
-                  var key=apSel+"_"+apWeek;
-                  var text=weekBriefings[key]||"";
-                  try{
-                    await fetch(SURL+"/rest/v1/week_briefings?week=eq."+encodeURIComponent(key),{method:"DELETE",headers:{apikey:SKEY,"Authorization":"Bearer "+(user.token||SKEY)}});
-                    if(text.trim()){
-                      await fetch(SURL+"/rest/v1/week_briefings",{method:"POST",headers:{apikey:SKEY,"Authorization":"Bearer "+(user.token||SKEY),"Content-Type":"application/json","Prefer":"return=minimal"},body:JSON.stringify({coach_id:user.email||user.id,week:key,briefing:text})});
-                    }
-                    setApSaved(true);setTimeout(function(){setApSaved(false);},2000);
-                  }catch(e){}
-                },
-                style:{background:C.red,color:C.white,border:"none",borderRadius:8,padding:"8px 18px",fontWeight:700,fontSize:12,cursor:"pointer",transition:"background .3s"}
-              },"Save Briefing")
-            )
+            React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}},
+              React.createElement("div",{style:{fontSize:11,fontWeight:700,color:"#3d3d4a",letterSpacing:1}},"WEEK BRIEFING"),
+              weekBriefings[apSel+"_"+apWeek]&&!editingBriefing&&React.createElement("button",{
+                onClick:function(){setEditingBriefing(true);},
+                style:{background:"none",border:"1px solid "+C.border,borderRadius:8,padding:"4px 12px",cursor:"pointer",fontWeight:700,fontSize:11,color:C.text}
+              },"Edit")
+            ),
+            weekBriefings[apSel+"_"+apWeek]&&!editingBriefing
+              ? React.createElement("div",{style:{fontSize:13,color:"#3d3d4a",lineHeight:1.6,whiteSpace:"pre-wrap",padding:"10px 12px",background:C.bg,borderRadius:8,border:"1px solid "+C.border}},
+                  weekBriefings[apSel+"_"+apWeek]
+                )
+              : React.createElement("div",null,
+                  React.createElement("textarea",{
+                    value:weekBriefings[apSel+"_"+apWeek]||"",
+                    onChange:function(e){setWeekBriefings(function(prev){return{...prev,[apSel+"_"+apWeek]:e.target.value};});},
+                    placeholder:"Write a briefing for this week — goals, focus, notes for athletes...",
+                    rows:3,
+                    style:{width:"100%",background:C.bg,border:"1px solid "+C.border,borderRadius:8,padding:"10px 12px",fontSize:13,color:C.text,outline:"none",resize:"vertical",fontFamily:"DM Sans,sans-serif",boxSizing:"border-box"}
+                  }),
+                  React.createElement("div",{style:{display:"flex",justifyContent:"flex-end",gap:8,marginTop:8}},
+                    editingBriefing&&React.createElement("button",{
+                      onClick:function(){setEditingBriefing(false);},
+                      style:{background:"none",border:"1px solid "+C.border,borderRadius:8,padding:"8px 14px",cursor:"pointer",fontWeight:700,fontSize:12,color:C.muted}
+                    },"Cancel"),
+                    React.createElement("button",{
+                      onClick:async function(){
+                        var key=apSel+"_"+apWeek;
+                        var text=weekBriefings[key]||"";
+                        try{
+                          await fetch(SURL+"/rest/v1/week_briefings?week=eq."+encodeURIComponent(key),{method:"DELETE",headers:{apikey:SKEY,"Authorization":"Bearer "+(user.token||SKEY)}});
+                          if(text.trim()){
+                            await fetch(SURL+"/rest/v1/week_briefings",{method:"POST",headers:{apikey:SKEY,"Authorization":"Bearer "+(user.token||SKEY),"Content-Type":"application/json","Prefer":"return=minimal"},body:JSON.stringify({coach_id:user.email||user.id,week:key,briefing:text})});
+                          }
+                          setEditingBriefing(false);
+                          setApSaved(true);setTimeout(function(){setApSaved(false);},2000);
+                        }catch(e){}
+                      },
+                      style:{background:C.red,color:C.white,border:"none",borderRadius:8,padding:"8px 18px",fontWeight:700,fontSize:12,cursor:"pointer"}
+                    },"Save Briefing")
+                  )
+                )
           ),
           apSel&&React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:12}},
             React.createElement("div",{style:{display:"flex",justifyContent:"flex-end",marginBottom:4}},
@@ -3986,11 +4021,11 @@ function AthleteApp({user,onLogout}){
       var myName=(user.fullName||user.name||"").toLowerCase().trim();
       var myEmail=(user.email||"").toLowerCase().trim();
       Promise.all([
-        fetch(SURL+"/rest/v1/personal_records?athlete_id=eq."+user.id+"&order=recorded_at.asc&select=*",{headers:headers}).then(function(r){if(!r.ok)throw new Error("PR");return r.json();}),
-        fetch(SURL+"/rest/v1/benchmark_scores?athlete_id=eq."+user.id+"&select=*",{headers:headers}).then(function(r){if(!r.ok)throw new Error("Bench");return r.json();}),
-        fetch(SURL+"/rest/v1/workout_logs?athlete_id=eq."+user.id+"&select=week,day,wod_name,score&order=logged_at.asc",{headers:headers}).then(function(r){if(!r.ok)throw new Error("Logs");return r.json();}),
-        fetch(SURL+"/rest/v1/athlete_programs?order=created_at.desc&select=*",{headers:headers}).then(function(r){if(!r.ok)throw new Error("Prog");return r.json();}),
-        fetch(SURL+"/rest/v1/week_briefings?select=*",{headers:headers}).then(function(r){if(!r.ok)return Promise.resolve([]);return r.json();})
+        fetch(SURL+"/rest/v1/personal_records?athlete_id=eq."+user.id+"&order=recorded_at.asc&select=*",{headers:headers}).then(function(r){if(!r.ok)return [];return r.json();}).catch(function(){return [];}),
+        fetch(SURL+"/rest/v1/benchmark_scores?athlete_id=eq."+user.id+"&select=*",{headers:headers}).then(function(r){if(!r.ok)return [];return r.json();}).catch(function(){return [];}),
+        fetch(SURL+"/rest/v1/workout_logs?athlete_id=eq."+user.id+"&select=week,day,wod_name,score&order=logged_at.asc",{headers:headers}).then(function(r){if(!r.ok)return [];return r.json();}).catch(function(){return [];}),
+        fetch(SURL+"/rest/v1/athlete_programs?order=created_at.desc&select=*",{headers:headers}).then(function(r){if(!r.ok)return [];return r.json();}).catch(function(){return [];}),
+        fetch(SURL+"/rest/v1/week_briefings?select=*",{headers:headers}).then(function(r){if(!r.ok)return [];return r.json();}).catch(function(){return [];})
       ]).then(function(results){
         var rmRows=results[0],benchRows=results[1],logRows=results[2],progRows=results[3],briefRows=results[4];
         // personal_records
