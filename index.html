@@ -6992,6 +6992,28 @@ function AthleteApp({user,onLogout}){
                         ),
                         // Content (block description) - shown after rows/exercises, before log score
                         b.content&&React.createElement("pre",{style:{fontSize:13,color:C.text,lineHeight:1.7,background:"rgba(255,255,255,.55)",padding:"10px 12px",borderRadius:8,margin:"0 0 10px",whiteSpace:"pre-wrap",fontFamily:"DM Sans,sans-serif",border:"1px solid "+col+"20"}},b.content),
+                        // Parts (additional WOD sections)
+                        (b.parts||[]).length>0&&React.createElement("div",{style:{display:"flex",flexDirection:"column",gap:0,marginBottom:10}},
+                          (b.parts||[]).map(function(part,pi){
+                            var hasWt=(part.rows||[]).some(function(r){return r.weight&&r.weight.trim();});
+                            return React.createElement("div",{key:part.id||pi,style:{borderTop:"1px dashed "+col+"40",paddingTop:8,marginTop:8}},
+                              part.subtitle&&React.createElement("div",{style:{fontSize:13,fontWeight:800,color:col,letterSpacing:1,marginBottom:6,textTransform:"uppercase"}},part.subtitle),
+                              (part.rows||[]).length>0&&React.createElement("div",{style:{background:"rgba(255,255,255,.7)",borderRadius:8,padding:"8px 10px",marginBottom:6}},
+                                React.createElement("div",{style:{display:"flex",gap:6,marginBottom:4}},
+                                  React.createElement("div",{style:{flex:1,fontSize:10,fontWeight:700,color:"#3d3d4a"}},"REPS/TIME"),
+                                  React.createElement("div",{style:{flex:hasWt?2:3,fontSize:10,fontWeight:700,color:"#3d3d4a"}},"EXERCISE"),
+                                  hasWt&&React.createElement("div",{style:{flex:1,fontSize:10,fontWeight:700,color:"#3d3d4a",textAlign:"right"}},"WEIGHT")
+                                ),
+                                (part.rows||[]).map(function(row,ri){return React.createElement("div",{key:ri,style:{display:"flex",gap:6,padding:"4px 0",borderTop:"1px solid "+col+"20"}},
+                                  React.createElement("div",{style:{flex:1,fontSize:13,fontWeight:700}},row.repsTime||"—"),
+                                  React.createElement("div",{style:{flex:hasWt?2:3,fontSize:13}},row.exercise||"—"),
+                                  hasWt&&React.createElement("div",{style:{flex:1,fontSize:13,fontWeight:700,textAlign:"right"}},row.weight||"—")
+                                );})
+                              ),
+                              part.content&&React.createElement("pre",{style:{fontSize:13,color:C.text,lineHeight:1.7,background:"rgba(255,255,255,.55)",padding:"8px 10px",borderRadius:8,margin:0,whiteSpace:"pre-wrap",fontFamily:"DM Sans,sans-serif",border:"1px solid "+col+"20"}},part.content)
+                            );
+                          })
+                        ),
                         // Score log for WOD blocks
                         canLog&&(function(){
                           var saveKey=viewWeek+"_"+d+"_"+(b.name||b.btype||"Block");
